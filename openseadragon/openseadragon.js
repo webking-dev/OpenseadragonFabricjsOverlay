@@ -1159,7 +1159,7 @@ function OpenSeadragon( options ){
             showZoomControl:         true,  //ZOOM
             showHomeControl:         true,  //HOME
             showFullPageControl:     true,  //FULL
-            showRotationControl:     false, //ROTATION
+            showRotationControl:     true, //ROTATION
             showFlipControl:         false,  //FLIP
             controlsFadeDelay:       2000,  //ZOOM/HOME/FULL/SEQUENCE
             controlsFadeLength:      1500,  //ZOOM/HOME/FULL/SEQUENCE
@@ -10558,6 +10558,20 @@ function onRotateLeft() {
         } else {
           currRotation = $.positiveModulo(currRotation - this.rotationIncrement, 360);
         }
+        var canvas = this._fabricjsOverlayInfo.fabricCanvas();
+        let canvasCenter = new fabric.Point(0, 0) // center of canvas
+        let radians = fabric.util.degreesToRadians(-this.rotationIncrement)
+
+        canvas.getObjects().forEach((obj) => {
+            let objectOrigin = new fabric.Point(obj.left, obj.top)
+            let new_loc = fabric.util.rotatePoint(objectOrigin, canvasCenter, radians)
+            obj.top = new_loc.y
+            obj.left = new_loc.x
+            obj.angle -= this.rotationIncrement //rotate each object by the same angle
+            // obj.setCoords()
+            canvas.renderAll()
+        });
+
         this.viewport.setRotation(currRotation);
     }
 }
@@ -10571,6 +10585,21 @@ function onRotateRight() {
         } else {
           currRotation = $.positiveModulo(currRotation + this.rotationIncrement, 360);
         }
+
+        var canvas = this._fabricjsOverlayInfo.fabricCanvas();
+        let canvasCenter = new fabric.Point(0, 0) // center of canvas
+        let radians = fabric.util.degreesToRadians(this.rotationIncrement)
+
+        canvas.getObjects().forEach((obj) => {
+            let objectOrigin = new fabric.Point(obj.left, obj.top)
+            let new_loc = fabric.util.rotatePoint(objectOrigin, canvasCenter, radians)
+            obj.top = new_loc.y
+            obj.left = new_loc.x
+            obj.angle += this.rotationIncrement //rotate each object by the same angle
+            // obj.setCoords()
+            canvas.renderAll()
+        });
+
         this.viewport.setRotation(currRotation);
     }
 }
